@@ -3,12 +3,12 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 require('dotenv').config();
 
-const DB_PATH = process.env.DB_PATH || './data/tasks.db';
-const dbDir = path.dirname(DB_PATH);
+const dbPath = process.env.RENDER ? '/var/data/tasks.db' : './data/tasks.db';
+const dbDir = path.dirname(dbPath);
 
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 
-const db = new Database(DB_PATH);
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
@@ -25,7 +25,6 @@ db.exec(`
     created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
     updated_at  TEXT    NOT NULL DEFAULT (datetime('now'))
   );
-
   CREATE INDEX IF NOT EXISTS idx_tasks_status   ON tasks(status);
   CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
 `);
